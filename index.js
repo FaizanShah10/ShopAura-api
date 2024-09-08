@@ -11,6 +11,14 @@ const db = require('./config/db')
 //routes imports
 const userRoutes = require('./routes/user')
 
+const corsOptions = {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // allow these methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // allow these headers
+    optionsSuccessStatus: 200,
+    credentials: true 
+  };
+
 
 //middlewares
 app.use(express.json())
@@ -18,10 +26,11 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
-app.use(cors({
-    origin: 'http://localhost:5173/',
-    credentials: true
-}))
+app.use(cors(corsOptions))
+
+
+
+
 
 
 app.get('/', (req, res) => {

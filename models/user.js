@@ -1,27 +1,18 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const { addressSchema } = require('./Address');
+const { paymentSchema } = require('./Payment');
 
-const userSchema = mongoose.Schema({
-    fullName: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true
-    },
-    role: {
-        type: String,
-        default: 'user'
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now()
-    }
-})
+const userSchema = new mongoose.Schema({
+    fullName: { type: String, required: true },
+    phoneNo: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    birthday: { type: Date, required: true },
+    password: { type: String, required: true },
+    role: { type: String, default: 'user' },
+    addresses: { type: [addressSchema], default: [] },
+    paymentMethods: { type: [paymentSchema], default: [] },
+    createdAt: { type: Date, default: Date.now }
+});
 
-module.exports = mongoose.model("user", userSchema)
+// Check if the model is already compiled to avoid the error
+module.exports = mongoose.model('user', userSchema);
