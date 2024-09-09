@@ -13,24 +13,18 @@ router.get('/', (req, res) => {
 //register
 router.post('/register', async (req, res) => {
   try {
-    const { fullName, phoneNo, email, birthday, password } = req.body;
+    const { fullName, email, birthday, password } = req.body;
 
-    // Hash the password before saving it to the database
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user with the hashed password
-    const newUser = new userModel({ fullName, phoneNo, email, birthday, password: hashedPassword });
+    const newUser = new userModel({ fullName, email, birthday, password: hashedPassword });
 
-    // Save user to the database
     await newUser.save();
 
-    // Create a JWT token
     const token = tokenGeneration(newUser)
 
-    // Set token in a cookie
     res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }); // Cookie expires in 1 hour
 
-    // Respond with success and user data
     res.status(201).json({ message: 'User created successfully', user: newUser });
   } catch (error) {
     console.error('Registration failed:', error.message);
@@ -41,19 +35,10 @@ router.post('/register', async (req, res) => {
 
 //login
 router.post('/login', async (req, res) => {
-    const { emailOrPhone, password } = req.body;
+    const { email, password } = req.body;
   
     try {
-      // Check if the input is an email or phone number
-      let user;
-      if (/\S+@\S+\.\S+/.test(emailOrPhone)) {
-        // It's an email
-        user = await userModel.findOne({ email: emailOrPhone });
-      } else {
-        // It's a phone number
-        user = await userModel.findOne({ phoneNo: emailOrPhone });
-      }
-  
+      let user = await userModel.findOne({email: email})
       if (!user) {
         return res.status(400).json({ message: 'Invalid login credentials' });
       }
@@ -73,11 +58,17 @@ router.post('/login', async (req, res) => {
         maxAge: 3600000 // 1 hour
       });
   
-      res.status(200).json({ message: 'User logged in successfully' });
+      res.status(200).json({ 
+        user: {
+            fullName: user.fullName,
+            email: user.email,
+            birthday: user.birthday
+        }
+       });
     } catch (error) {
       res.status(500).json({ message: 'Server error' });
     }
-  });
+});
 
 //logout
 router.post('/logout', (req, res) => {

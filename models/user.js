@@ -4,7 +4,6 @@ const { paymentSchema } = require('./Payment');
 
 const userSchema = new mongoose.Schema({
     fullName: { type: String, required: true },
-    phoneNo: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     birthday: { type: Date, required: true },
     password: { type: String, required: true },
