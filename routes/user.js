@@ -12,39 +12,32 @@ router.get('/', (req, res) => {
 
 //register
 router.post('/register', async (req, res) => {
-    try {
-        const {fullName, phoneNo, birthday ,email, password} = req.body
+  try {
+    const { fullName, phoneNo, email, birthday, password } = req.body;
 
-        //checking if user already exists with the same email
-        const user = await userModel.findOne({email: email})
-        if(user) res.status(401).send("email already registered")
+    // Hash the password before saving it to the database
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Password hashing
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
+    // Create a new user with the hashed password
+    const newUser = new userModel({ fullName, phoneNo, email, birthday, password: hashedPassword });
 
-        //creating/registering new user
+    // Save user to the database
+    await newUser.save();
 
-        const newUser = await userModel.create({
-            fullName, 
-            phoneNo,
-            birthday,
-            email,
-            password: hashedPassword
-        })
+    // Create a JWT token
+    const token = tokenGeneration(newUser)
 
-        // JWT token creation and sending as a cookie
-        const token = tokenGeneration(newUser); 
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none'
-        });
-        res.send("user registered");
-    } catch (error) {
-        console.log(error.message)
-    }
-})
+    // Set token in a cookie
+    res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }); // Cookie expires in 1 hour
+
+    // Respond with success and user data
+    res.status(201).json({ message: 'User created successfully', user: newUser });
+  } catch (error) {
+    console.error('Registration failed:', error.message);
+    res.status(500).json({ message: 'Registration failed', error: error.message });
+  }
+});
+
 
 //login
 router.post('/login', async (req, res) => {
@@ -88,13 +81,11 @@ router.post('/login', async (req, res) => {
 
 //logout
 router.post('/logout', (req, res) => {
-    res.clearCookie("token", {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'none'
-    });
-    res.send("logged out");
-})
+  // Clear the session or remove the token here
+  res.clearCookie('token'); // Example for clearing a cookie-based token
+  res.status(200).json({ message: 'Logged out successfully' });
+});
+
 
 //all users
 router.get('/all-users', async (req, res) => {
@@ -147,10 +138,33 @@ router.put('/update/:id', async (req, res) => {
 
 //update/edit user profile
 router.put("/update-profile/:id", async (req, res) => {
-    const id = req.params.id;
-    const { name, email, password } = req.body;
+    try {
+        const id = req.params.id;
+        const { fullName, email, password, phoneNo } = req.body;
+    
+        const user = await userModel.findById(id)
+        if(!user){
+            res.status(400).send("No user found")
+        }
 
-    const user = await userModel.findByIdAndUpdate()
+        user.fullName = fullName
+        user.email = email
+        user.phoneNo = phoneNo
+
+        if (password) {
+            const saltRounds = 10;
+            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            user.password = hashedPassword;
+        }
+
+
+        await user.save()
+        res.status(200).send({message: "profile updated"})
+
+
+    } catch (error) {
+        console.log(error.message)
+    }
 })
 
 module.exports = router

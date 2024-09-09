@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
 })
 
 //routes
-app.use("/user", userRoutes)
+app.use("/api/user", userRoutes)
 
 
 const PORT = process.env.PORT
