@@ -13,11 +13,11 @@ router.get('/', (req, res) => {
 //register
 router.post('/register', async (req, res) => {
   try {
-    const { fullName, email, birthday, password } = req.body;
+    const { fullName, email, birthday, password, role } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new userModel({ fullName, email, birthday, password: hashedPassword });
+    const newUser = new userModel({ fullName, email, birthday, role, password: hashedPassword });
 
     await newUser.save();
 
@@ -62,7 +62,8 @@ router.post('/login', async (req, res) => {
         user: {
             fullName: user.fullName,
             email: user.email,
-            birthday: user.birthday
+            birthday: user.birthday,
+            role: user.role
         }
        });
     } catch (error) {
@@ -128,7 +129,7 @@ router.put('/update/:id', async (req, res) => {
 })
 
 //update/edit user profile
-router.put("/update-profile/:id", async (req, res) => {
+router.put("/edit-profile", async (req, res) => {
     try {
         const id = req.params.id;
         const { fullName, email, password, phoneNo } = req.body;

@@ -10,6 +10,7 @@ const db = require('./config/db')
 
 //routes imports
 const userRoutes = require('./routes/user')
+const productRoutes = require('./routes/product')
 
 const corsOptions = {
     origin: 'http://localhost:5173',
@@ -39,6 +40,7 @@ app.get('/', (req, res) => {
 
 //routes
 app.use("/api/user", userRoutes)
+app.use('/api/product', productRoutes)
 
 
 const PORT = process.env.PORT
