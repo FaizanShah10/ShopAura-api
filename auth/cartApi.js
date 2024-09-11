@@ -1,8 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { getBaseUrl } from '../../Frontend/src/utils/BaseUrl';
 
-export const authApi = createApi({
-  reducerPath: 'authApi',
+export const cartApi = createApi({ 
+  reducerPath: 'cartApi',
   baseQuery: fetchBaseQuery({
     baseUrl: `${getBaseUrl()}/api/user`,
     credentials: 'include',
@@ -79,4 +79,4 @@ export const {
   useEditProfileMutation,
   useDeleteUserMutation,
   useUpdateUserMutation, // Add this hook for updateUser mutation
-} = authApi;
+} = cartApi;
