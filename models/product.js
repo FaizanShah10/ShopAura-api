@@ -42,6 +42,7 @@ const productSchema = new mongoose.Schema({
     required: true,
     default: 'admin',
   },
+  reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'review' }]
 }, {
   timestamps: true, 
 });

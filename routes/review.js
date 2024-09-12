@@ -20,10 +20,10 @@ router.post('/post-review', async (req, res) => {
         } else {
             // Create new review
             const newReview = new reviewModel({
-                comment,
-                rating,
-                userId,
-                productId
+                comment: comment,
+                rating: rating,
+                userId: userId,
+                productId: productId
             });
             await newReview.save();
             return res.status(201).json({ message: 'Review posted', review: newReview });
@@ -33,7 +33,6 @@ router.post('/post-review', async (req, res) => {
         return res.status(500).json({ message: 'Error posting review', error: error.message });
     }
 });
-
 
 
 //get reviews
@@ -51,9 +50,31 @@ router.get('/reviews-by-user/:userId', async (req, res) => {
     const {id} = req.params.id
     try {
         const userReview = await reviewModel.find({userId: id})
-        res.send(userReview)
+        if(userReview.length === 0){
+            res.send("No reviews")
+        } else {
+            res.send(userReview)
+        }
     } catch (error) {
         console.log("Error getting user review", error.message)
+    }
+})
+
+//get reviews for a product
+router.get('/reviews-for-product/:productId', async (req, res) => {
+    const {productId} = req.params
+
+    try {
+        const reviews = await reviewModel.find({productId}).populate('userId', 'fullName email')
+
+        if(reviews.length === 0){
+            res.send("No reviews found for this product")
+        }
+
+        return res.status(200).send(reviews)
+    } catch (error) {
+        console.error('Error fetching reviews:', error.message);
+        return res.status(500).json({ message: 'Error fetching reviews', error: error.message });
     }
 })
 

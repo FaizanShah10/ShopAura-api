@@ -16,8 +16,9 @@ const reviewSchema = mongoose.Schema({
     productId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'product'
-    }
-}, {timeStamps: true}
+    },
+    createdAt: { type: Date, default: Date.now }
+}
 )
 
 module.exports = mongoose.model('review', reviewSchema)

@@ -28,7 +28,7 @@ export const productApi = createApi({
                 url: `/${id}`,
                 method: 'GET',
             }),
-            providesTags: ['Product'],
+            providesTags: (result, error, id) => [{type: "Products", id}],
         }),
         updateProduct: builder.mutation({
             query: ({id, ...rest}) => ({
