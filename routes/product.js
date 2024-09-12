@@ -8,7 +8,7 @@ const { verifyAdmin, verifyLogin } = require('../middlewares/authentication');
 // Create a new product
 router.post('/new-product', verifyLogin, verifyAdmin, async (req, res) => {
     try {
-        const { name, category, description, price, oldPrice, image, color, rating, author } = req.body;
+        const { name, category, description, price, oldPrice, image, rating, colors, sizes, author } = req.body;
 
         // Create a new product instance
         const newProduct = new productModel({
@@ -18,7 +18,8 @@ router.post('/new-product', verifyLogin, verifyAdmin, async (req, res) => {
             price,
             oldPrice,
             image,
-            color,
+            colors,
+            sizes,
             rating,
             author
         });

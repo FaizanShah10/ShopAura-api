@@ -27,15 +27,21 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  color: {
-    type: String,
-    required: true,
+  colors: {
+    type: [String],
+    default: [],
+  },
+  sizes: {
+    type: [String],
+    default: [],
+    
   },
   rating: {
     type: Number,
     min: 0,
     max: 5,
     required: true,
+    default: 5
   },
   author: {
     type: String,
