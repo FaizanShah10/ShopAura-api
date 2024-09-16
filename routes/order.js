@@ -7,6 +7,10 @@ router.post('/place-order', async (req, res) => {
     const {userId, address, payment} = req.body
 
     try {
+
+        if(!address && !payment){
+            return res.status(400).json({message: "Please provide address and payment details."})
+        }
         //finding user
         const user = await userModel.findById(userId)
     
