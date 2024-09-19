@@ -66,7 +66,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update product
-router.put('/update-product/:id', verifyAdmin, async (req, res) => {
+router.put('/update-product/:id', verifyLogin, verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -84,7 +84,7 @@ router.put('/update-product/:id', verifyAdmin, async (req, res) => {
 });
 
 // Delete a product
-router.delete('/delete-product/:id', verifyAdmin, async (req, res) => {
+router.delete('/delete-product/:id', verifyLogin, verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
 
