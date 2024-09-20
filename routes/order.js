@@ -3,41 +3,48 @@ const router = express.Router();
 
 const orderModel = require('../models/Order')
 
-router.post('/place-order', async (req, res) => {
-    try {
-        const { cartItems, address, payment, userId } = req.body;
-        
-        
-        // Calculate total amount
-        let totalAmount = 0;
-        const productInfo = cartItems.map(item => {
-            totalAmount += item.price * item.quantity;
-            return {
-                name: item.name,
-                description: item.description,
-                price: item.price,
-                quantity: item.quantity
-            };
-        });
 
-        // Create new order
+router.post('/place-order', async (req, res) => {
+    const { userId, userName, productInfo, address, payment, totalAmount, orderStatus } = req.body;
+
+    try {
+        // Create a new order document
         const newOrder = new orderModel({
             userId,
+            userName,
             productInfo,
             address,
             payment,
-            totalAmount
+            totalAmount,
+            orderStatus: orderStatus || 'pending', // Optional orderStatus or default to 'pending'
         });
 
-        // Save order to database
-        await newOrder.save();
+        // Save the order to the database
+        const savedOrder = await newOrder.save();
 
-        res.status(201).json({ message: 'Order created successfully', order: newOrder });
+        // Respond with success status and order details
+        res.status(201).json({
+            message: 'Order placed successfully',
+            order: savedOrder,
+        });
+
     } catch (error) {
-        console.error('Error creating order:', error);
-        res.status(500).json({ message: 'Failed to create order' });
+        // Log and respond with error if something goes wrong
+        console.error('Error placing order:', error);
+        res.status(500).json({ message: 'Error placing order' });
     }
 });
+
+
+//fetch all orders
+router.get('/all-orders', async (req, res) => {
+    try {
+        const response = await orderModel.find()
+        res.send(response)
+    } catch (error) {
+        console.log(error.message)
+    }
+})
 
 
 

@@ -7,6 +7,9 @@ const orderSchema = new mongoose.Schema({
         ref: 'user',
         required: true
     },
+    userName: {
+        type: String,
+    },
     productInfo: [{
         name: String,
         description: String,
@@ -26,6 +29,12 @@ const orderSchema = new mongoose.Schema({
         expirationDate: { type: String, required: true },
         cvv: { type: String, required: true },
         billingAddress: { type: String, required: true }
+    },
+    orderSatus:
+    {
+        type: String,
+        enum: ['pending', 'shipped', 'delivered'],
+        default: 'pending'
     },
     totalAmount: {
         type: Number,
