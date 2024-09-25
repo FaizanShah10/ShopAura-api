@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const orderModel = require('../models/Order')
+const userModel = require('../models/user')
 
 
 router.post('/place-order', async (req, res) => {
@@ -21,6 +22,18 @@ router.post('/place-order', async (req, res) => {
 
         // Save the order to the database
         const savedOrder = await newOrder.save();
+
+        //find user to save the payment, address info init
+        const user = await userModel.findById(userId)
+        if(!user){
+            return res.status(404).json({ message: 'User not found' })
+        }
+
+        user.paymentMethods.push(payment);  //pushing the payment Info
+        user.addresses.push(address); //pushing the address Info
+        user.orders.push(productInfo) //pushing productInfo into orders
+
+        await user.save()
 
         // Respond with success status and order details
         res.status(201).json({

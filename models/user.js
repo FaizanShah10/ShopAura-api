@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { addressSchema } = require('./Address');
 const { paymentSchema } = require('./Payment');
+const { orderSchema } = require('./Order')
 
 const userSchema = new mongoose.Schema({
     fullName: { type: String, required: true },
@@ -10,6 +11,7 @@ const userSchema = new mongoose.Schema({
     role: { type: String, default: 'user' },
     addresses: { type: [addressSchema], default: [] },
     paymentMethods: { type: [paymentSchema], default: [] },
+    orders: { type: [orderSchema], default: [] },
     createdAt: { type: Date, default: Date.now }
 });
 
