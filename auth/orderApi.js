@@ -21,8 +21,16 @@ export const orderApi = createApi({
                 url: '/all-orders',
                 method: 'GET',
             })
-        })
+        }),
+        fetchOrderByUserId: builder.query({
+            query: (userId) => ({
+                url: `/user-orders/${userId}`,
+                method: 'GET',
+            })
+        }),
+        
+       
     })
 })
 
-export const {useFetchAllOrdersQuery, usePlaceOrderMutation} = orderApi
+export const {useFetchAllOrdersQuery, usePlaceOrderMutation, useFetchOrderByUserIdQuery} = orderApi

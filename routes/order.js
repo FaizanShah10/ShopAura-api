@@ -59,6 +59,27 @@ router.get('/all-orders', async (req, res) => {
     }
 })
 
+//fetch orders by user id
+router.get('/user-orders/:userId', async (req, res) => {
+
+    const {userId} = req.params
+
+    try {
+
+        const order = await orderModel.find({userId})
+
+        if(order.length === 0){
+            return res.status(404).json({ message: 'No orders found for this user' })
+        }
+
+
+        res.json(order)
+
+    } catch (error) {
+        console.log(error.message)
+    }
+})
+
 
 
 module.exports = router
