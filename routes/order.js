@@ -2,10 +2,14 @@ const express = require('express');
 const router = express.Router();
 
 const orderModel = require('../models/Order')
-const userModel = require('../models/user')
+const userModel = require('../models/user');
+const { verifyLogin } = require('../middlewares/authentication');
+const { verifyAdmin } = require('../middlewares/authentication');
 
 
-router.post('/place-order', async (req, res) => {
+
+
+router.post('/place-order', verifyLogin, async (req, res) => {
     const { userId, userName, productInfo, address, payment, totalAmount, orderStatus } = req.body;
 
     try {
@@ -50,7 +54,7 @@ router.post('/place-order', async (req, res) => {
 
 
 //fetch all orders
-router.get('/all-orders', async (req, res) => {
+router.get('/all-orders', verifyLogin, verifyAdmin, async (req, res) => {
     try {
         const response = await orderModel.find()
         res.send(response)
