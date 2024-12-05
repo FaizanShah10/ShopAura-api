@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
+require('dotenv').config()
+
 
 const orderModel = require('../models/Order')
 const userModel = require('../models/user');
 const { verifyLogin } = require('../middlewares/authentication');
 const { verifyAdmin } = require('../middlewares/authentication');
-const stripe = require('stripe')('sk_test_51OvkHY00BKfqzn3t3UU6yXQeKRnTjdm6wNHwjrFNp9NR5Kg8YaF1ckJLKFCBEpS1YtiMHznVbzF8PoySkdmUndCc0072oGSydr');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 
 
