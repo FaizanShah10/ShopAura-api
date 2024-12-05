@@ -5,52 +5,51 @@ const orderModel = require('../models/Order')
 const userModel = require('../models/user');
 const { verifyLogin } = require('../middlewares/authentication');
 const { verifyAdmin } = require('../middlewares/authentication');
+const stripe = require('stripe')('sk_test_51OvkHY00BKfqzn3t3UU6yXQeKRnTjdm6wNHwjrFNp9NR5Kg8YaF1ckJLKFCBEpS1YtiMHznVbzF8PoySkdmUndCc0072oGSydr');
 
 
 
 
-router.post('/place-order', verifyLogin, async (req, res) => {
-    const { userId, userName, productInfo, address, payment, totalAmount, orderStatus } = req.body;
+router.post('/create', async (req, res) => {
+    const { userId, userName, productInfo, address, payment, totalAmount } = req.body;
+
+    console.log("Product Info: ", productInfo);
+
+    if (!userId || !productInfo || !address || !totalAmount) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const lineItems = productInfo.map((product) => ({
+        price_data: {
+            currency: 'usd',
+            product_data: {
+                name: product.name,
+                description: product.description,
+            },
+            unit_amount: parseInt(product.price) * 100,
+        },
+        quantity: product.quantity,
+    }));
 
     try {
-        // Create a new order document
-        const newOrder = new orderModel({
-            userId,
-            userName,
-            productInfo,
-            address,
-            payment,
-            totalAmount,
-            orderStatus: orderStatus || 'pending', // Optional orderStatus or default to 'pending'
+        // Create a Stripe Checkout Session
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: lineItems,
+            mode: 'payment',
+            success_url: 'http://localhost:5173/success', 
+            cancel_url: 'http://localhost:5173/cancel',   
         });
 
-        // Save the order to the database
-        const savedOrder = await newOrder.save();
-
-        //find user to save the payment, address info init
-        const user = await userModel.findById(userId)
-        if(!user){
-            return res.status(404).json({ message: 'User not found' })
-        }
-
-        user.paymentMethods.push(payment);  //pushing the payment Info
-        user.addresses.push(address); //pushing the address Info
-        user.orders.push(productInfo) //pushing productInfo into orders
-
-        await user.save()
-
-        // Respond with success status and order details
-        res.status(201).json({
-            message: 'Order placed successfully',
-            order: savedOrder,
-        });
-
+        // Return the sessionId to the frontend
+        res.json({ sessionId: session.id });
     } catch (error) {
-        // Log and respond with error if something goes wrong
-        console.error('Error placing order:', error);
-        res.status(500).json({ message: 'Error placing order' });
+        console.error('Error creating session:', error);
+        res.status(500).json({ error: 'Failed to create session' });
     }
 });
+
+
 
 
 //fetch all orders

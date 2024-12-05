@@ -13,6 +13,7 @@ const userRoutes = require('./routes/user')
 const productRoutes = require('./routes/product')
 const reviewRoute = require('./routes/review')
 const orderRoute = require('./routes/order')
+const paymentRoute = require('./routes/Payment')
 
 const corsOptions = {
     origin: 'http://localhost:5173',
@@ -35,16 +36,16 @@ app.use(cors(corsOptions))
 
 
 
-
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('Hello From Aura Home!')
 })
 
 //routes
 app.use("/api/user", userRoutes)
 app.use('/api/product', productRoutes)
 app.use('/api/review', reviewRoute)
-app.use('/api/order', orderRoute)
+app.use('/api/orders', orderRoute)
+app.use('/api/payment', paymentRoute)
 
 
 const PORT = process.env.PORT

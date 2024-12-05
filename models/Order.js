@@ -1,4 +1,3 @@
-// models/Order.js
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
@@ -24,14 +23,16 @@ const orderSchema = new mongoose.Schema({
         country: { type: String, required: true }
     },
     payment: {
-        cardNumber: { type: String, required: true },
-        cardHolderName: { type: String, required: true },
-        expirationDate: { type: String, required: true },
-        cvv: { type: String, required: true },
-        billingAddress: { type: String, required: true }
+        paymentMethodId: { type: String, required: true }, // Reference to Stripe payment method
+        billingDetails: {
+            street: { type: String, required: true },
+            city: { type: String, required: true },
+            state: { type: String, required: true },
+            postalCode: { type: String, required: true },
+            country: { type: String, required: true },
+        },
     },
-    orderSatus:
-    {
+    orderStatus: {
         type: String,
         enum: ['pending', 'shipped', 'delivered'],
         default: 'pending'
@@ -46,6 +47,4 @@ const orderSchema = new mongoose.Schema({
     }
 });
 
-
 module.exports = mongoose.model('order', orderSchema);
-
