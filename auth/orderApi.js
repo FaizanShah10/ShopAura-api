@@ -4,7 +4,7 @@ import { getBaseUrl } from '../../Frontend/src/utils/BaseUrl';
 export const orderApi = createApi({
     reducerPath: 'orderApi',
     baseQuery: fetchBaseQuery({
-        baseUrl: `${getBaseUrl()}/api/order`,
+        baseUrl: `${getBaseUrl()}/api/orders`,
         credentials: 'include'
     }),
     tagTypes: ['Order'],
